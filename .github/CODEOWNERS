@@ -1,0 +1,12 @@
+# Code owners for pix-automatico-reference
+# Docs: https://docs.github.com/articles/about-code-owners
+
+# Default owner for everything
+*                                       @Paulo-Marcos-Lucio
+
+# Critical paths require explicit review
+/pom.xml                                @Paulo-Marcos-Lucio
+/.github/                               @Paulo-Marcos-Lucio
+/docker-compose.yml                     @Paulo-Marcos-Lucio
+/src/main/resources/db/migration/       @Paulo-Marcos-Lucio
+/docs/adr/                              @Paulo-Marcos-Lucio

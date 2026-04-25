@@ -1,0 +1,16 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+  jpa:
+    show-sql: false
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    dev.pmlsp.pixauto: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: INFO

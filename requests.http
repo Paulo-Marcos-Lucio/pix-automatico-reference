@@ -1,0 +1,77 @@
+### Criar Consent
+POST http://localhost:8080/v1/consents
+Content-Type: application/json
+Idempotency-Key: {{$uuid}}
+
+{
+  "payer": { "document": "12345678901", "name": "Alice Silva" },
+  "receiverKey": { "type": "EMAIL", "value": "loja@merchant.com" },
+  "policy": {
+    "frequency": "MONTHLY",
+    "amount": "99.90",
+    "currency": "BRL",
+    "firstCharge": "2026-05-01",
+    "maxOccurrences": 12
+  }
+}
+
+> {% client.global.set("consentId", response.body.consentId); %}
+
+### Autorizar Consent
+POST http://localhost:8080/v1/consents/{{consentId}}/authorize
+
+### Consultar Consent
+GET http://localhost:8080/v1/consents/{{consentId}}
+
+### Criar Subscription
+POST http://localhost:8080/v1/subscriptions
+Content-Type: application/json
+Idempotency-Key: {{$uuid}}
+
+{
+  "consentId": "{{consentId}}",
+  "externalReference": "invoice-2026-05"
+}
+
+> {% client.global.set("subscriptionId", response.body.subscriptionId); %}
+
+### Agendar Charge
+POST http://localhost:8080/v1/charges
+Content-Type: application/json
+Idempotency-Key: {{$uuid}}
+
+{
+  "subscriptionId": "{{subscriptionId}}",
+  "amount": "99.90",
+  "currency": "BRL",
+  "scheduledFor": "2026-04-19"
+}
+
+> {% client.global.set("chargeId", response.body.chargeId); %}
+
+### Consultar Charge
+GET http://localhost:8080/v1/charges/{{chargeId}}
+
+### Webhook de settlement (simulando BC)
+POST http://localhost:8080/webhooks/bcb/charge-status
+Content-Type: application/json
+
+{
+  "chargeId": "{{chargeId}}",
+  "endToEndId": "E12345678202604190000ABCDEFGHIJK",
+  "status": "SETTLED",
+  "occurredAt": "2026-04-19T15:00:00Z"
+}
+
+### Revogar Consent
+POST http://localhost:8080/v1/consents/{{consentId}}/revoke
+Content-Type: application/json
+Idempotency-Key: {{$uuid}}
+
+{ "reason": "user requested cancellation" }
+
+### Health
+GET http://localhost:8080/actuator/health
+
+### Prometheus metrics
+GET http://localhost:8080/actuator/prometheus

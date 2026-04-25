@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+management:
+  tracing:
+    sampling:
+      probability: 0.0
+
+outbox:
+  poll-interval-ms: 200
+
+pixauto:
+  bcb:
+    mode: simulated
+    simulated:
+      failure-rate: 0.0
+      retryable-rate: 0.0
+
+logging:
+  level:
+    dev.pmlsp.pixauto: DEBUG
+    org.testcontainers: INFO

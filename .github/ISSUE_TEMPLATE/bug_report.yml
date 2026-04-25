@@ -1,0 +1,85 @@
+name: Bug report
+description: Reportar comportamento incorreto, exceção ou regressão.
+title: "[bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar. Quanto mais detalhes, mais rápido o fix.
+        **Não inclua dados sensíveis** (CPF, chaves Pix reais, tokens, etc.).
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Resumo
+      description: Uma frase descrevendo o problema.
+      placeholder: "POST /v1/charges retorna 500 quando Idempotency-Key é repetida com payload diferente"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Como reproduzir
+      description: Passo a passo mínimo. Inclua `curl` ou `requests.http`.
+      placeholder: |
+        1. `make up`
+        2. `curl -X POST http://localhost:8080/v1/consents ...`
+        3. `curl -X POST http://localhost:8080/v1/charges ...` (mesmo Idempotency-Key, payload diferente)
+        4. Erro 500 retornado em vez de 422
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento esperado
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento atual
+      description: Inclua stacktrace / log relevante (sanitizado).
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versão
+      description: Tag, commit ou branch.
+      placeholder: "v0.1.0 / main@abcd1234"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Ambiente
+      options:
+        - Local (docker-compose)
+        - CI
+        - Outro (descreva em "informações adicionais")
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Informações adicionais
+      description: JDK, OS, configs customizadas, etc.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmações
+      options:
+        - label: Verifiquei que não existe issue aberta com o mesmo problema.
+          required: true
+        - label: Não estou compartilhando dados sensíveis ou de produção real.
+          required: true
