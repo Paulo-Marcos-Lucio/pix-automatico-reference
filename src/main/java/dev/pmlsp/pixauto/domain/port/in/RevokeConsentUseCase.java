@@ -3,5 +3,5 @@ package dev.pmlsp.pixauto.domain.port.in;
 import java.util.UUID;
 
 public interface RevokeConsentUseCase {
-    void handle(UUID consentId, String reason);
+    void revoke(UUID consentId, String reason);
 }

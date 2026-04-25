@@ -5,5 +5,5 @@ import dev.pmlsp.pixauto.domain.model.Consent;
 import java.util.UUID;
 
 public interface GetConsentUseCase {
-    Consent handle(UUID consentId);
+    Consent getById(UUID consentId);
 }

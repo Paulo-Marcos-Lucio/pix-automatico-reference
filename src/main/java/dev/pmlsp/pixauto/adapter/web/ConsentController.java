@@ -30,7 +30,7 @@ public class ConsentController {
     public ResponseEntity<ConsentDtos.CreateConsentResponse> create(
             @Valid @RequestBody ConsentDtos.CreateConsentRequest request) {
         var cmd = mapper.toCommand(request);
-        UUID id = createConsent.handle(new CreateConsentUseCase.Command(
+        UUID id = createConsent.create(new CreateConsentUseCase.Command(
                 cmd.payer(), cmd.receiverKey(), cmd.policy()));
         var body = new ConsentDtos.CreateConsentResponse(
                 id, "AWAITING_AUTHORIZATION",
@@ -40,19 +40,19 @@ public class ConsentController {
 
     @GetMapping("/{id}")
     public ConsentDtos.ConsentView get(@PathVariable UUID id) {
-        return mapper.toView(getConsent.handle(id));
+        return mapper.toView(getConsent.getById(id));
     }
 
     @PostMapping("/{id}/authorize")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void authorize(@PathVariable UUID id) {
-        authorizeConsent.handle(id);
+        authorizeConsent.authorize(id);
     }
 
     @PostMapping("/{id}/revoke")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revoke(@PathVariable UUID id,
                        @Valid @RequestBody ConsentDtos.RevokeConsentRequest request) {
-        revokeConsent.handle(id, request.reason());
+        revokeConsent.revoke(id, request.reason());
     }
 }

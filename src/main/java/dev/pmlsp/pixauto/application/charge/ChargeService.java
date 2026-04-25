@@ -33,7 +33,7 @@ public class ChargeService implements ScheduleChargeUseCase, GetChargeUseCase, U
 
     @Override
     @Transactional
-    public UUID handle(ScheduleChargeUseCase.Command cmd) {
+    public UUID schedule(ScheduleChargeUseCase.Command cmd) {
         Subscription sub = subscriptions.findById(cmd.subscriptionId())
                 .orElseThrow(() -> new SubscriptionNotFoundException(cmd.subscriptionId()));
         Consent consent = consents.findById(sub.getConsentId())
@@ -53,13 +53,13 @@ public class ChargeService implements ScheduleChargeUseCase, GetChargeUseCase, U
 
     @Override
     @Transactional(readOnly = true)
-    public Charge handle(UUID chargeId) {
+    public Charge getById(UUID chargeId) {
         return charges.findById(chargeId).orElseThrow(() -> new ChargeNotFoundException(chargeId));
     }
 
     @Override
     @Transactional
-    public void handle(UpdateChargeStatusUseCase.Command cmd) {
+    public void updateStatus(UpdateChargeStatusUseCase.Command cmd) {
         Charge charge = charges.findById(cmd.chargeId())
                 .orElseThrow(() -> new ChargeNotFoundException(cmd.chargeId()));
         switch (cmd.status()) {

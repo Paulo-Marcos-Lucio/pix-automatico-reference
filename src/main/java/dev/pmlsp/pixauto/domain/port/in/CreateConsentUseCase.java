@@ -7,7 +7,7 @@ import dev.pmlsp.pixauto.domain.model.RecurrencePolicy;
 import java.util.UUID;
 
 public interface CreateConsentUseCase {
-    UUID handle(Command command);
+    UUID create(Command command);
 
     record Command(EndUser payer, PixKey receiverKey, RecurrencePolicy policy) {}
 }

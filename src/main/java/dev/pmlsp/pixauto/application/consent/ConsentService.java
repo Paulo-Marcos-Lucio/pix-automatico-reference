@@ -27,7 +27,7 @@ public class ConsentService implements
 
     @Override
     @Transactional
-    public UUID handle(CreateConsentUseCase.Command cmd) {
+    public UUID create(CreateConsentUseCase.Command cmd) {
         Consent consent = Consent.create(cmd.payer(), cmd.receiverKey(), cmd.policy());
         consents.save(consent);
         log.info("consent.created id={} payer={}", consent.getId(), mask(cmd.payer().document()));
@@ -36,13 +36,13 @@ public class ConsentService implements
 
     @Override
     @Transactional(readOnly = true)
-    public Consent handle(UUID consentId) {
+    public Consent getById(UUID consentId) {
         return consents.findById(consentId).orElseThrow(() -> new ConsentNotFoundException(consentId));
     }
 
     @Override
     @Transactional
-    public void handle(UUID consentId) {
+    public void authorize(UUID consentId) {
         Consent consent = consents.findById(consentId).orElseThrow(() -> new ConsentNotFoundException(consentId));
         consent.authorize();
         consents.save(consent);
@@ -52,7 +52,7 @@ public class ConsentService implements
 
     @Override
     @Transactional
-    public void handle(UUID consentId, String reason) {
+    public void revoke(UUID consentId, String reason) {
         Consent consent = consents.findById(consentId).orElseThrow(() -> new ConsentNotFoundException(consentId));
         consent.revoke(reason);
         consents.save(consent);

@@ -26,7 +26,7 @@ public class ChargeController {
     public ResponseEntity<ChargeDtos.ScheduleChargeResponse> schedule(
             @Valid @RequestBody ChargeDtos.ScheduleChargeRequest req) {
         Money money = new Money(req.amount(), Currency.getInstance(req.currency()));
-        UUID id = scheduleCharge.handle(new ScheduleChargeUseCase.Command(
+        UUID id = scheduleCharge.schedule(new ScheduleChargeUseCase.Command(
                 req.subscriptionId(), money, req.scheduledFor()));
         return ResponseEntity.created(URI.create("/v1/charges/" + id))
                 .body(new ChargeDtos.ScheduleChargeResponse(
@@ -35,7 +35,7 @@ public class ChargeController {
 
     @GetMapping("/{id}")
     public ChargeDtos.ChargeView get(@PathVariable UUID id) {
-        Charge c = getCharge.handle(id);
+        Charge c = getCharge.getById(id);
         return new ChargeDtos.ChargeView(
                 c.getId(), c.getSubscriptionId(), c.getConsentId(),
                 c.getAmount().amount(), c.getAmount().currency().getCurrencyCode(),

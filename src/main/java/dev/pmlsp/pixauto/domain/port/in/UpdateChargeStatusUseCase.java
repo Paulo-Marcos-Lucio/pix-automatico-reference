@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public interface UpdateChargeStatusUseCase {
-    void handle(Command command);
+    void updateStatus(Command command);
 
     record Command(UUID chargeId, String endToEndId, Status status, Instant occurredAt,
                    String errorCode, String errorMessage) {

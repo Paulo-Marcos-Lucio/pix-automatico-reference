@@ -29,7 +29,7 @@ public class WebhookController {
             case SETTLED -> UpdateChargeStatusUseCase.Command.Status.SETTLED;
             case FAILED -> UpdateChargeStatusUseCase.Command.Status.FAILED;
         };
-        updateChargeStatus.handle(new UpdateChargeStatusUseCase.Command(
+        updateChargeStatus.updateStatus(new UpdateChargeStatusUseCase.Command(
                 update.chargeId(), update.endToEndId(), mapped, update.occurredAt(),
                 update.errorCode(), update.errorMessage()));
     }

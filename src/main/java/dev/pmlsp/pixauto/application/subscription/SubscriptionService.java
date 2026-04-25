@@ -24,7 +24,7 @@ public class SubscriptionService implements CreateSubscriptionUseCase {
 
     @Override
     @Transactional
-    public UUID handle(Command cmd) {
+    public UUID create(Command cmd) {
         Consent consent = consents.findById(cmd.consentId())
                 .orElseThrow(() -> new ConsentNotFoundException(cmd.consentId()));
         if (!consent.isAuthorized()) {

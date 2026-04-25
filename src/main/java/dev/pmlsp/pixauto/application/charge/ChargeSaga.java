@@ -19,7 +19,7 @@ import java.util.UUID;
 
 /**
  * Orchestrates the Scheduled -> Initiated transition by calling the BC gateway.
- * SETTLED/FAILED transitions come from {@link ChargeService#handle(dev.pmlsp.pixauto.domain.port.in.UpdateChargeStatusUseCase.Command)}
+ * SETTLED/FAILED transitions come from {@link ChargeService#updateStatus(dev.pmlsp.pixauto.domain.port.in.UpdateChargeStatusUseCase.Command)}
  * triggered by webhooks or polling.
  */
 @Slf4j

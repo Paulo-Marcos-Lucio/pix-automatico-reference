@@ -5,5 +5,5 @@ import dev.pmlsp.pixauto.domain.model.Charge;
 import java.util.UUID;
 
 public interface GetChargeUseCase {
-    Charge handle(UUID chargeId);
+    Charge getById(UUID chargeId);
 }

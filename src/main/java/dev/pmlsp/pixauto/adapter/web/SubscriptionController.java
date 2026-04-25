@@ -23,7 +23,7 @@ public class SubscriptionController {
     @PostMapping
     public ResponseEntity<SubscriptionDtos.CreateSubscriptionResponse> create(
             @Valid @RequestBody SubscriptionDtos.CreateSubscriptionRequest req) {
-        UUID id = createSubscription.handle(
+        UUID id = createSubscription.create(
                 new CreateSubscriptionUseCase.Command(req.consentId(), req.externalReference()));
         return ResponseEntity.created(URI.create("/v1/subscriptions/" + id))
                 .body(new SubscriptionDtos.CreateSubscriptionResponse(id, "ACTIVE"));

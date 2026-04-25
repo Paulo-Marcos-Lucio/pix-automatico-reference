@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public interface ScheduleChargeUseCase {
-    UUID handle(Command command);
+    UUID schedule(Command command);
 
     record Command(UUID subscriptionId, Money amount, LocalDate scheduledFor) {}
 }
