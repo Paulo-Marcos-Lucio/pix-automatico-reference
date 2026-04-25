@@ -190,7 +190,7 @@ jobs:
         run: $MVN spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=pix-automatico-reference:ci
 
       - name: Trivy scan (image)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: pix-automatico-reference:ci
           format: sarif
