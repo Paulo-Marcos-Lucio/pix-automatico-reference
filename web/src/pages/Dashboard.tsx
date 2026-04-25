@@ -45,24 +45,24 @@ export default function Dashboard() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           icon={FileSignature}
-          label="Consents"
+          label="Consentimentos"
           value={consents.isLoading ? null : consentTotal.toString()}
           hint={`${consentAuthorized} autorizados`}
-          to="/consents"
+          to="/consentimentos"
         />
         <KpiCard
           icon={Repeat}
-          label="Subscriptions"
+          label="Assinaturas"
           value={subscriptions.isLoading ? null : subscriptionTotal.toString()}
           hint="ativas"
-          to="/subscriptions"
+          to="/assinaturas"
         />
         <KpiCard
           icon={CreditCard}
-          label="Charges"
+          label="Cobranças"
           value={charges.isLoading ? null : chargeTotal.toString()}
           hint={`${chargesSettled} liquidadas`}
-          to="/charges"
+          to="/cobrancas"
         />
         <KpiCard
           icon={TrendingUp}
@@ -70,7 +70,7 @@ export default function Dashboard() {
           value={successRate === null ? "—" : `${successRate}%`}
           hint={`${chargesFailed} falhas`}
           tone={successRate !== null && successRate < 80 ? "warning" : undefined}
-          to="/charges"
+          to="/cobrancas"
         />
       </div>
 
@@ -81,7 +81,7 @@ export default function Dashboard() {
               <Activity className="h-4 w-4" />
               Cobranças recentes
             </CardTitle>
-            <Link to="/charges" className="text-xs text-muted-foreground hover:underline">
+            <Link to="/cobrancas" className="text-xs text-muted-foreground hover:underline">
               ver tudo →
             </Link>
           </CardHeader>
@@ -93,13 +93,13 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : recentCharges.length === 0 ? (
-              <EmptyHint message="Nenhuma cobrança ainda — crie um consent → subscription → charge." />
+              <EmptyHint message="Nenhuma cobrança ainda — crie um consentimento → assinatura → cobrança." />
             ) : (
               <ul className="space-y-2">
                 {recentCharges.map((c) => (
                   <li key={c.id}>
                     <Link
-                      to={`/charges/${c.id}`}
+                      to={`/cobrancas/${c.id}`}
                       className="flex items-center justify-between rounded-md border bg-card px-3 py-2 hover:bg-accent"
                     >
                       <div className="flex items-center gap-3">
@@ -133,9 +133,9 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <Row label="Idempotência" value={<Badge variant="success">3 camadas</Badge>} />
-            <Row label="Outbox" value={<Badge variant="success">async Kafka</Badge>} />
-            <Row label="Saga" value={<Badge variant="success">orquestrada</Badge>} />
-            <Row label="Tracing" value={<Badge variant="secondary">OTel → Tempo</Badge>} />
+            <Row label="Caixa de saída" value={<Badge variant="success">async Kafka</Badge>} />
+            <Row label="Orquestração" value={<Badge variant="success">saga</Badge>} />
+            <Row label="Rastreio" value={<Badge variant="secondary">OTel → Tempo</Badge>} />
             <Row label="Métricas" value={<Badge variant="secondary">Prometheus</Badge>} />
             <Row label="Logs" value={<Badge variant="secondary">JSON → Loki</Badge>} />
           </CardContent>

@@ -46,9 +46,9 @@ export default function Charges() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Charges</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Cobranças</h1>
           <p className="text-muted-foreground">
-            Cobranças agendadas, iniciadas ou já liquidadas — auto-refresh a cada 5s.
+            Cobranças agendadas, iniciadas ou já liquidadas — atualização automática a cada 5 segundos.
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
@@ -65,12 +65,12 @@ export default function Charges() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Subscription</TableHead>
+                <TableHead>Identificador</TableHead>
+                <TableHead>Assinatura</TableHead>
                 <TableHead>Valor</TableHead>
-                <TableHead>Agendada</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>EndToEndId</TableHead>
+                <TableHead>Agendada para</TableHead>
+                <TableHead>Situação</TableHead>
+                <TableHead>ID fim a fim</TableHead>
                 <TableHead>Tentativas</TableHead>
               </TableRow>
             </TableHeader>
@@ -96,13 +96,13 @@ export default function Charges() {
                   : data?.items.map((c) => (
                       <TableRow key={c.id}>
                         <TableCell className="font-mono text-xs">
-                          <Link to={`/charges/${c.id}`} className="hover:underline">
+                          <Link to={`/cobrancas/${c.id}`} className="hover:underline">
                             {shortId(c.id)}
                           </Link>
                         </TableCell>
                         <TableCell>
                           <Link
-                            to={`/subscriptions`}
+                            to={`/assinaturas`}
                             className="font-mono text-xs text-primary hover:underline"
                           >
                             {shortId(c.subscriptionId)}
@@ -156,7 +156,10 @@ function ScheduleChargeDialog({
         currency: "BRL",
         scheduledFor,
       });
-      toast({ title: "Cobrança agendada", description: "A saga vai iniciá-la em segundos." });
+      toast({
+        title: "Cobrança agendada",
+        description: "A orquestração assíncrona vai iniciá-la em segundos.",
+      });
       onOpenChange(false);
     } catch (err) {
       toast({
@@ -175,7 +178,7 @@ function ScheduleChargeDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs">Subscription ativa</Label>
+            <Label className="text-xs">Assinatura ativa</Label>
             <Select value={subscriptionId} onValueChange={setSubscriptionId}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione..." />
@@ -183,7 +186,7 @@ function ScheduleChargeDialog({
               <SelectContent>
                 {active.length === 0 ? (
                   <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhuma subscription ativa
+                    Nenhuma assinatura ativa
                   </div>
                 ) : (
                   active.map((s) => (
@@ -197,7 +200,7 @@ function ScheduleChargeDialog({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Valor (BRL)</Label>
+              <Label className="text-xs">Valor (R$)</Label>
               <Input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}

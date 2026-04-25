@@ -20,7 +20,7 @@ export default function Header() {
     ) : (
       <Badge variant="destructive" className="gap-1">
         <AlertCircle className="h-3 w-3" />
-        {status}
+        {status === "DOWN" ? "Indisponível" : "Desconhecido"}
       </Badge>
     );
 
@@ -39,7 +39,7 @@ export default function Header() {
           rel="noreferrer"
           className="text-xs text-muted-foreground hover:text-foreground hover:underline"
         >
-          Swagger UI ↗
+          API ↗
         </a>
         <a
           href="/actuator"
@@ -47,7 +47,7 @@ export default function Header() {
           rel="noreferrer"
           className="text-xs text-muted-foreground hover:text-foreground hover:underline"
         >
-          Actuator ↗
+          Saúde ↗
         </a>
         {indicator}
       </div>

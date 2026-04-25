@@ -21,6 +21,7 @@ import {
 import { useCreateConsent } from "@/hooks/useApi";
 import { useToast } from "@/components/ui/use-toast";
 import { ApiError } from "@/lib/api";
+import { frequencyLabel, pixKeyTypeLabel } from "@/lib/i18n";
 import type { Frequency, PixKeyType } from "@/lib/types";
 
 interface Props {
@@ -61,31 +62,37 @@ export default function CreateConsentDialog({ open, onOpenChange }: Props) {
           maxOccurrences: maxOccurrences ? Number(maxOccurrences) : null,
         },
       });
-      toast({ title: "Consent criado", description: "Aguardando autorização." });
+      toast({
+        title: "Consentimento criado",
+        description: "Aguardando autorização do pagador.",
+      });
       onOpenChange(false);
     } catch (err) {
       toast({
-        title: "Falha ao criar consent",
+        title: "Falha ao criar consentimento",
         description: err instanceof ApiError ? err.message : String(err),
         variant: "destructive",
       });
     }
   }
 
+  const pixKeyOptions: PixKeyType[] = ["EMAIL", "CPF", "CNPJ", "PHONE", "EVP"];
+  const frequencyOptions: Frequency[] = ["DAILY", "WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Novo consent</DialogTitle>
+          <DialogTitle>Novo consentimento</DialogTitle>
           <DialogDescription>
-            Registra uma autorização de recorrência. O consent começa em
-            AWAITING_AUTHORIZATION e precisa ser autorizado depois.
+            Registra uma autorização de recorrência. O consentimento começa em <strong>"Aguardando autorização"</strong> e
+            precisa ser autorizado pelo pagador num passo seguinte.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <Field label="CPF/CNPJ do pagador">
+            <Field label="CPF ou CNPJ do pagador">
               <Input value={payerDoc} onChange={(e) => setPayerDoc(e.target.value)} required />
             </Field>
             <Field label="Nome do pagador">
@@ -94,17 +101,17 @@ export default function CreateConsentDialog({ open, onOpenChange }: Props) {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Tipo de chave">
+            <Field label="Tipo da chave Pix">
               <Select value={keyType} onValueChange={(v) => setKeyType(v as PixKeyType)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="EMAIL">EMAIL</SelectItem>
-                  <SelectItem value="CPF">CPF</SelectItem>
-                  <SelectItem value="CNPJ">CNPJ</SelectItem>
-                  <SelectItem value="PHONE">PHONE</SelectItem>
-                  <SelectItem value="EVP">EVP</SelectItem>
+                  {pixKeyOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {pixKeyTypeLabel[opt]}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </Field>
@@ -120,15 +127,15 @@ export default function CreateConsentDialog({ open, onOpenChange }: Props) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DAILY">Diária</SelectItem>
-                  <SelectItem value="WEEKLY">Semanal</SelectItem>
-                  <SelectItem value="MONTHLY">Mensal</SelectItem>
-                  <SelectItem value="QUARTERLY">Trimestral</SelectItem>
-                  <SelectItem value="YEARLY">Anual</SelectItem>
+                  {frequencyOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {frequencyLabel[opt]}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Valor (BRL)">
+            <Field label="Valor (R$)">
               <Input
                 type="text"
                 inputMode="decimal"
@@ -137,7 +144,7 @@ export default function CreateConsentDialog({ open, onOpenChange }: Props) {
                 required
               />
             </Field>
-            <Field label="Máx. ocorrências">
+            <Field label="Nº máximo de cobranças">
               <Input
                 type="number"
                 min="1"
@@ -147,7 +154,7 @@ export default function CreateConsentDialog({ open, onOpenChange }: Props) {
             </Field>
           </div>
 
-          <Field label="Primeira cobrança">
+          <Field label="Data da primeira cobrança">
             <Input
               type="date"
               value={firstCharge}

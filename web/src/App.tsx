@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import Consents from "@/pages/Consents";
@@ -12,16 +12,29 @@ export default function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/consents" element={<Consents />} />
-        <Route path="/consents/:id" element={<ConsentDetail />} />
-        <Route path="/subscriptions" element={<Subscriptions />} />
-        <Route path="/charges" element={<Charges />} />
-        <Route path="/charges/:id" element={<ChargeDetail />} />
-        <Route path="/webhooks" element={<Webhooks />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route index element={<Navigate to="/painel" replace />} />
+        <Route path="/painel" element={<Dashboard />} />
+        <Route path="/consentimentos" element={<Consents />} />
+        <Route path="/consentimentos/:id" element={<ConsentDetail />} />
+        <Route path="/assinaturas" element={<Subscriptions />} />
+        <Route path="/cobrancas" element={<Charges />} />
+        <Route path="/cobrancas/:id" element={<ChargeDetail />} />
+        <Route path="/notificacoes" element={<Webhooks />} />
+        {/* Compatibilidade: rotas antigas em inglês redirecionam pras novas */}
+        <Route path="/dashboard" element={<Navigate to="/painel" replace />} />
+        <Route path="/consents" element={<Navigate to="/consentimentos" replace />} />
+        <Route path="/consents/:id" element={<RedirectWithParam base="/consentimentos" />} />
+        <Route path="/subscriptions" element={<Navigate to="/assinaturas" replace />} />
+        <Route path="/charges" element={<Navigate to="/cobrancas" replace />} />
+        <Route path="/charges/:id" element={<RedirectWithParam base="/cobrancas" />} />
+        <Route path="/webhooks" element={<Navigate to="/notificacoes" replace />} />
+        <Route path="*" element={<Navigate to="/painel" replace />} />
       </Route>
     </Routes>
   );
+}
+
+function RedirectWithParam({ base }: { base: string }) {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`${base}/${id}`} replace />;
 }

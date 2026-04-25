@@ -1,20 +1,20 @@
 import { NavLink } from "react-router-dom";
 import {
   ArrowDownUp,
+  Bell,
   CreditCard,
   FileSignature,
   LayoutDashboard,
   Repeat,
-  Webhook,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/consents", label: "Consents", icon: FileSignature },
-  { to: "/subscriptions", label: "Subscriptions", icon: Repeat },
-  { to: "/charges", label: "Charges", icon: CreditCard },
-  { to: "/webhooks", label: "Webhooks", icon: Webhook },
+  { to: "/painel", label: "Painel", icon: LayoutDashboard },
+  { to: "/consentimentos", label: "Consentimentos", icon: FileSignature },
+  { to: "/assinaturas", label: "Assinaturas", icon: Repeat },
+  { to: "/cobrancas", label: "Cobranças", icon: CreditCard },
+  { to: "/notificacoes", label: "Notificações", icon: Bell },
 ];
 
 export default function Sidebar() {
@@ -51,7 +51,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="border-t p-4 text-xs text-muted-foreground">
-        <p>v0.2.0 · Reference Impl</p>
+        <p>v0.2.0 · Implementação de referência</p>
         <a
           href="https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference"
           target="_blank"

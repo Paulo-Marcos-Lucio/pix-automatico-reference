@@ -1,23 +1,24 @@
 import { Badge } from "@/components/ui/badge";
 import type { ChargeStatus, ConsentStatus, SubscriptionStatus } from "@/lib/types";
+import { statusLabel } from "@/lib/i18n";
 
 type Status = ChargeStatus | ConsentStatus | SubscriptionStatus;
 
 const variantByStatus: Record<Status, "default" | "secondary" | "destructive" | "outline" | "success" | "warning"> = {
-  // Charge
+  // Cobrança
   SCHEDULED: "secondary",
   INITIATED: "warning",
   SETTLED: "success",
   FAILED: "destructive",
   CANCELLED: "outline",
-  // Consent
+  // Consentimento
   AWAITING_AUTHORIZATION: "warning",
   AUTHORIZED: "success",
   REJECTED: "destructive",
   REVOKED: "outline",
   EXPIRED: "outline",
   CONSUMED: "secondary",
-  // Subscription
+  // Assinatura
   ACTIVE: "success",
   PAUSED: "warning",
   COMPLETED: "secondary",
@@ -25,8 +26,8 @@ const variantByStatus: Record<Status, "default" | "secondary" | "destructive" | 
 
 export function StatusBadge({ status }: { status: Status }) {
   return (
-    <Badge variant={variantByStatus[status] ?? "secondary"} className="font-mono text-xs">
-      {status}
+    <Badge variant={variantByStatus[status] ?? "secondary"} className="text-xs">
+      {statusLabel(status)}
     </Badge>
   );
 }

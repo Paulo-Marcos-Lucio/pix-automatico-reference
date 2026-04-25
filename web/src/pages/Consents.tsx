@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useConsents } from "@/hooks/useApi";
 import { formatCurrency, formatDate, maskDocument, shortId } from "@/lib/utils";
 import { StatusBadge } from "@/components/StatusBadge";
+import { frequencyLabel, pixKeyTypeLabel } from "@/lib/i18n";
 import CreateConsentDialog from "./consents/CreateConsentDialog";
 
 export default function Consents() {
@@ -26,14 +27,14 @@ export default function Consents() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Consents</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Consentimentos</h1>
           <p className="text-muted-foreground">
-            Autorizações de recorrência registradas com o BCB.
+            Autorizações de recorrência registradas no Banco Central.
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
           <Plus />
-          Novo consent
+          Novo consentimento
         </Button>
       </div>
 
@@ -46,20 +47,20 @@ export default function Consents() {
         <CardContent>
           {isError && (
             <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
-              Erro ao carregar consents. Verifica se o backend está rodando em :8080.
+              Erro ao carregar os consentimentos. Verifique se o servidor está rodando na porta 8080.
             </div>
           )}
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead>Identificador</TableHead>
                 <TableHead>Pagador</TableHead>
-                <TableHead>Chave</TableHead>
+                <TableHead>Chave Pix</TableHead>
                 <TableHead>Frequência</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>1ª cobrança</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Criado</TableHead>
+                <TableHead>Situação</TableHead>
+                <TableHead>Criado em</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -77,14 +78,14 @@ export default function Consents() {
                   ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
-                        Nenhum consent ainda. Cria o primeiro acima.
+                        Nenhum consentimento ainda. Crie o primeiro no botão acima.
                       </TableCell>
                     </TableRow>
                   )
                   : data?.items.map((c) => (
                       <TableRow key={c.id} className="cursor-pointer">
                         <TableCell className="font-mono text-xs">
-                          <Link to={`/consents/${c.id}`} className="hover:underline">
+                          <Link to={`/consentimentos/${c.id}`} className="hover:underline">
                             {shortId(c.id)}
                           </Link>
                         </TableCell>
@@ -95,10 +96,10 @@ export default function Consents() {
                           </div>
                         </TableCell>
                         <TableCell className="text-xs">
-                          <div>{c.receiverKeyType}</div>
+                          <div>{pixKeyTypeLabel[c.receiverKeyType]}</div>
                           <div className="text-muted-foreground">{c.receiverKeyValue}</div>
                         </TableCell>
-                        <TableCell>{c.frequency}</TableCell>
+                        <TableCell>{frequencyLabel[c.frequency]}</TableCell>
                         <TableCell>{formatCurrency(c.amount, c.currency)}</TableCell>
                         <TableCell>{formatDate(c.firstCharge)}</TableCell>
                         <TableCell>

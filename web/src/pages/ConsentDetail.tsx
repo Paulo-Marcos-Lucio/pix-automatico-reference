@@ -14,6 +14,7 @@ import {
   maskDocument,
 } from "@/lib/utils";
 import { StatusBadge } from "@/components/StatusBadge";
+import { frequencyLabel, pixKeyTypeLabel } from "@/lib/i18n";
 import { useToast } from "@/components/ui/use-toast";
 import { ApiError } from "@/lib/api";
 import {
@@ -37,7 +38,7 @@ export default function ConsentDetail() {
     if (!id) return;
     try {
       await authorize.mutateAsync(id);
-      toast({ title: "Consent autorizado" });
+      toast({ title: "Consentimento autorizado" });
     } catch (err) {
       toast({
         title: "Falha ao autorizar",
@@ -51,7 +52,7 @@ export default function ConsentDetail() {
     if (!id) return;
     try {
       await revoke.mutateAsync({ id, reason: revokeReason });
-      toast({ title: "Consent revogado" });
+      toast({ title: "Consentimento revogado" });
       setRevokeOpen(false);
       setRevokeReason("");
     } catch (err) {
@@ -78,7 +79,7 @@ export default function ConsentDetail() {
   return (
     <div className="space-y-6">
       <Link
-        to="/consents"
+        to="/consentimentos"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-3 w-3" />
@@ -88,7 +89,7 @@ export default function ConsentDetail() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">Consent</h1>
+            <h1 className="text-2xl font-bold">Consentimento</h1>
             <StatusBadge status={data.status} />
           </div>
           <p className="mt-1 font-mono text-xs text-muted-foreground">{data.id}</p>
@@ -129,7 +130,7 @@ export default function ConsentDetail() {
             <CardTitle>Chave do recebedor</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <Row label="Tipo" value={data.receiverKeyType} />
+            <Row label="Tipo" value={pixKeyTypeLabel[data.receiverKeyType]} />
             <Row label="Valor" value={data.receiverKeyValue} />
           </CardContent>
         </Card>
@@ -139,7 +140,7 @@ export default function ConsentDetail() {
             <CardTitle>Recorrência</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <Row label="Frequência" value={data.frequency} />
+            <Row label="Frequência" value={frequencyLabel[data.frequency]} />
             <Row label="Valor" value={formatCurrency(data.amount, data.currency)} />
             <Row label="Início" value={formatDate(data.firstCharge)} />
             <Row label="Fim" value={data.endDate ? formatDate(data.endDate) : "—"} />
@@ -174,14 +175,14 @@ export default function ConsentDetail() {
       <Dialog open={revokeOpen} onOpenChange={setRevokeOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Revogar consent</DialogTitle>
+            <DialogTitle>Revogar consentimento</DialogTitle>
           </DialogHeader>
           <div className="space-y-2">
             <Label className="text-xs">Motivo (obrigatório)</Label>
             <Input
               value={revokeReason}
               onChange={(e) => setRevokeReason(e.target.value)}
-              placeholder="Ex: Solicitação do cliente"
+              placeholder="Ex.: solicitação do cliente"
               required
             />
           </div>

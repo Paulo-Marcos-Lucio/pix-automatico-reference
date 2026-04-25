@@ -1,4 +1,4 @@
-import { ExternalLink, Webhook } from "lucide-react";
+import { Bell, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -6,28 +6,29 @@ export default function Webhooks() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Webhooks</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Notificações</h1>
         <p className="text-muted-foreground">
-          Endpoint de notificação assíncrona do BCB.
+          Canal de retorno assíncrono do Banco Central para confirmar liquidação ou falha das cobranças.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Webhook className="h-4 w-4" />
+            <Bell className="h-4 w-4" />
             POST /webhooks/bcb/charge-status
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Recebido pelo backend quando o BCB confirma <code>SETTLED</code> ou <code>FAILED</code>.
-            O handler chama <code>UpdateChargeStatusUseCase</code> e a cobrança transiciona para
-            o estado terminal — verificável em <a href="/charges" className="text-primary hover:underline">Charges</a>.
+            Endereço chamado pelo Banco Central quando uma cobrança é finalizada — seja com
+            sucesso (<code>SETTLED</code>) ou falha (<code>FAILED</code>). O servidor recebe o
+            aviso e transita o estado da cobrança para o terminal correspondente. O resultado fica
+            visível imediatamente em <a href="/cobrancas" className="text-primary hover:underline">Cobranças</a>.
           </p>
 
           <div className="rounded-md border bg-muted/30 p-4 font-mono text-xs">
-            <div className="mb-2 text-muted-foreground">Payload esperado:</div>
+            <div className="mb-2 text-muted-foreground">Formato do payload:</div>
             <pre>{JSON.stringify(
               {
                 chargeId: "uuid",
@@ -47,29 +48,31 @@ export default function Webhooks() {
             <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
               <li>
                 <Badge variant="success" className="mr-2">Idempotente</Badge>
-                mesmo webhook entregue 2× resulta no mesmo estado
+                a mesma notificação entregue duas vezes resulta no mesmo estado final
               </li>
               <li>
                 <Badge variant="success" className="mr-2">Validado</Badge>
-                payload obrigatório via Bean Validation
+                campos obrigatórios verificados pelas regras de validação
               </li>
               <li>
                 <Badge variant="success" className="mr-2">Rastreável</Badge>
-                cada evento gera um span correlacionado pelo traceId
+                cada notificação gera um rastro correlacionado por identificador único
               </li>
               <li>
-                <Badge variant="secondary" className="mr-2">Retorna 202</Badge>
-                Accepted — processamento síncrono ao DB, async ao Kafka
+                <Badge variant="secondary" className="mr-2">Resposta 202</Badge>
+                Aceito — gravação no banco é síncrona, propagação posterior é assíncrona
               </li>
             </ul>
           </div>
 
           <div className="rounded-md border border-warning/30 bg-warning/5 p-4 text-sm">
-            <div className="mb-1 font-semibold text-warning-foreground">Auditoria de webhooks</div>
+            <div className="mb-1 font-semibold text-warning-foreground">
+              Histórico das notificações recebidas
+            </div>
             <p className="text-muted-foreground">
-              Para audit log dos webhooks recebidos historicamente, abre o Kafka UI ou o Grafana e
-              filtra por evento <code>charge.settled</code> / <code>charge.failed</code>. Endpoint
-              dedicado de listagem fica como roadmap (v0.3.0).
+              Para visualizar o histórico das notificações que já chegaram, abra o painel do Kafka
+              ou o Grafana e filtre por evento <code>charge.settled</code> ou{" "}
+              <code>charge.failed</code>. Uma página dedicada está prevista no roadmap.
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
               <a
@@ -79,7 +82,7 @@ export default function Webhooks() {
                 className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
               >
                 <ExternalLink className="h-3 w-3" />
-                Kafka UI (:8089)
+                Painel do Kafka (porta 8089)
               </a>
               <a
                 href="http://localhost:3000"
@@ -88,7 +91,7 @@ export default function Webhooks() {
                 className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
               >
                 <ExternalLink className="h-3 w-3" />
-                Grafana (:3000)
+                Grafana (porta 3000)
               </a>
             </div>
           </div>

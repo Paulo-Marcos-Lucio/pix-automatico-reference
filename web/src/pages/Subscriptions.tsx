@@ -46,14 +46,14 @@ export default function Subscriptions() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Subscriptions</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Assinaturas</h1>
           <p className="text-muted-foreground">
-            Assinaturas vinculadas a um consent autorizado.
+            Vínculos comerciais ativos sobre um consentimento autorizado.
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
           <Plus />
-          Nova subscription
+          Nova assinatura
         </Button>
       </div>
 
@@ -65,13 +65,13 @@ export default function Subscriptions() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Consent</TableHead>
-                <TableHead>Referência externa</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Identificador</TableHead>
+                <TableHead>Consentimento</TableHead>
+                <TableHead>Referência interna</TableHead>
+                <TableHead>Situação</TableHead>
                 <TableHead>Cobranças</TableHead>
                 <TableHead>Última cobrança</TableHead>
-                <TableHead>Criada</TableHead>
+                <TableHead>Criada em</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,7 +89,7 @@ export default function Subscriptions() {
                   ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center text-sm text-muted-foreground">
-                        Nenhuma subscription. Crie a partir de um consent autorizado.
+                        Nenhuma assinatura ainda. Crie a partir de um consentimento autorizado.
                       </TableCell>
                     </TableRow>
                   )
@@ -98,7 +98,7 @@ export default function Subscriptions() {
                         <TableCell className="font-mono text-xs">{shortId(s.id)}</TableCell>
                         <TableCell>
                           <Link
-                            to={`/consents/${s.consentId}`}
+                            to={`/consentimentos/${s.consentId}`}
                             className="font-mono text-xs text-primary hover:underline"
                           >
                             {shortId(s.consentId)}
@@ -149,13 +149,13 @@ function CreateSubscriptionDialog({
         consentId,
         externalReference: externalRef || null,
       });
-      toast({ title: "Subscription criada" });
+      toast({ title: "Assinatura criada" });
       onOpenChange(false);
       setConsentId("");
       setExternalRef("");
     } catch (err) {
       toast({
-        title: "Falha ao criar",
+        title: "Falha ao criar assinatura",
         description: err instanceof ApiError ? err.message : String(err),
         variant: "destructive",
       });
@@ -166,19 +166,19 @@ function CreateSubscriptionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nova subscription</DialogTitle>
+          <DialogTitle>Nova assinatura</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs">Consent autorizado</Label>
+            <Label className="text-xs">Consentimento autorizado</Label>
             <Select value={consentId} onValueChange={setConsentId}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um consent..." />
+                <SelectValue placeholder="Selecione um consentimento..." />
               </SelectTrigger>
               <SelectContent>
                 {authorized.length === 0 ? (
                   <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                    Nenhum consent autorizado disponível
+                    Nenhum consentimento autorizado disponível
                   </div>
                 ) : (
                   authorized.map((c) => (
@@ -191,11 +191,11 @@ function CreateSubscriptionDialog({
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">Referência externa (opcional)</Label>
+            <Label className="text-xs">Referência interna (opcional)</Label>
             <Input
               value={externalRef}
               onChange={(e) => setExternalRef(e.target.value)}
-              placeholder="Ex: invoice-2026-04-001"
+              placeholder="Ex.: fatura-2026-04-001"
             />
           </div>
           <DialogFooter>

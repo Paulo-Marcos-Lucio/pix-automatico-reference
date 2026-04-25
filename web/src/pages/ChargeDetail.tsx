@@ -30,7 +30,7 @@ export default function ChargeDetail() {
     },
     {
       key: "INITIATED",
-      label: "Iniciada no BCB",
+      label: "Iniciada no Banco Central",
       time: data.initiatedAt,
       done: !!data.initiatedAt,
       icon: Clock,
@@ -48,7 +48,7 @@ export default function ChargeDetail() {
   return (
     <div className="space-y-6">
       <Link
-        to="/charges"
+        to="/cobrancas"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-3 w-3" />
@@ -119,29 +119,29 @@ export default function ChargeDetail() {
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <Row label="Valor" value={formatCurrency(data.amount, data.currency)} />
-            <Row label="Subscription" value={data.subscriptionId} mono />
-            <Row label="Consent" value={data.consentId} mono />
+            <Row label="Assinatura" value={data.subscriptionId} mono />
+            <Row label="Consentimento" value={data.consentId} mono />
             <Row label="Tentativas" value={data.attemptCount.toString()} />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>BCB / Conciliação</CardTitle>
+            <CardTitle>Banco Central · Conciliação</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <Row label="EndToEndId" value={data.endToEndId ?? "—"} mono />
+            <Row label="ID fim a fim" value={data.endToEndId ?? "—"} mono />
             <Row
-              label="Iniciada"
+              label="Iniciada em"
               value={data.initiatedAt ? formatDateTime(data.initiatedAt) : "—"}
             />
             <Row
-              label="Liquidada"
+              label="Liquidada em"
               value={data.settledAt ? formatDateTime(data.settledAt) : "—"}
             />
             {data.errorCode && (
               <>
-                <Row label="Código de erro" value={data.errorCode} mono />
+                <Row label="Código do erro" value={data.errorCode} mono />
                 <Row label="Mensagem" value={data.errorMessage ?? ""} />
               </>
             )}
