@@ -56,3 +56,9 @@ certs/*
 .github/java-upgrade/
 .claude/
 CLAUDE.local.md
+
+### Frontend ###
+web/node_modules/
+web/dist/
+web/.vite/
+src/main/resources/static/

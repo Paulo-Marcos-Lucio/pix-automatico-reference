@@ -21,7 +21,7 @@ env:
   JAVA_VERSION: "21"
   JAVA_DISTRIBUTION: temurin
   MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.wagon.http.retryHandler.count=3"
-  MVN: ./mvnw -B -ntp
+  MVN: ./mvnw -B -ntp -Dskip.web=true
 
 jobs:
   build:
@@ -171,11 +171,44 @@ jobs:
           sarif_file: semgrep.sarif
           category: semgrep
 
+  web-build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install deps
+        working-directory: web
+        run: npm ci --no-audit --no-fund --prefer-offline
+
+      - name: Type-check
+        working-directory: web
+        run: npm run type-check
+
+      - name: Build
+        working-directory: web
+        run: npm run build
+
+      - name: Upload static bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: src/main/resources/static/
+          retention-days: 7
+
   docker:
     name: Docker image
     runs-on: ubuntu-latest
-    needs: [unit-tests]
-    timeout-minutes: 15
+    needs: [unit-tests, web-build]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -186,8 +219,24 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # Build OCI image with frontend bundled — image must have the SPA inside.
+      # We skip the frontend-maven-plugin (no node download to target/) and
+      # build the SPA via the cached npm setup we already have.
+      - name: Build frontend into static/
+        working-directory: web
+        run: |
+          npm ci --no-audit --no-fund --prefer-offline
+          npm run build
+
       - name: Build OCI image
-        run: $MVN spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=pix-automatico-reference:ci
+        run: ./mvnw -B -ntp spring-boot:build-image -DskipTests -Dskip.web=true -Dspring-boot.build-image.imageName=pix-automatico-reference:ci
 
       - name: Trivy scan (image)
         uses: aquasecurity/trivy-action@v0.36.0
@@ -208,7 +257,7 @@ jobs:
   ci-status:
     name: CI status
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, arch-tests, semgrep, docker]
+    needs: [unit-tests, integration-tests, arch-tests, semgrep, web-build, docker]
     if: always()
     steps:
       - name: Aggregate status

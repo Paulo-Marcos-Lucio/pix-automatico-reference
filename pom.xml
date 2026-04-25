@@ -29,6 +29,10 @@
         <testcontainers.version>1.20.4</testcontainers.version>
         <opentelemetry.version>1.43.0</opentelemetry.version>
         <archunit.version>1.3.0</archunit.version>
+        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+        <node.version>v22.11.0</node.version>
+        <npm.version>10.9.0</npm.version>
+        <skip.web>false</skip.web>
     </properties>
 
     <dependencies>
@@ -284,6 +288,57 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+                Builds the React frontend in web/ during the Maven lifecycle.
+                Output goes to src/main/resources/static/ (gitignored), which
+                Spring Boot serves automatically from the resulting JAR.
+
+                Skip with -Dskip.web=true for fast backend-only iteration.
+            -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${frontend-maven-plugin.version}</version>
+                <configuration>
+                    <workingDirectory>web</workingDirectory>
+                    <installDirectory>target</installDirectory>
+                    <skip>${skip.web}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>ci --prefer-offline --no-audit --progress=false</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -48,10 +48,15 @@ make down
 # Build / testes
 make test     # unit
 make it       # unit + integration via Testcontainers
-make build    # mvn package -DskipTests
+make build    # mvn package -DskipTests (com frontend bundled)
 
 # Run app
-make run
+make run        # API + UI bundled em :8080
+make run-fast   # só backend, pula build do frontend (-Dskip.web=true)
+
+# Frontend
+make web-dev    # Vite dev server :5173 com proxy pra backend :8080 (hot reload)
+make web-build  # só o frontend → src/main/resources/static/
 
 # Imagem OCI via Buildpacks
 make image
@@ -85,11 +90,24 @@ git tag v0.2.0
 git push origin v0.2.0
 ```
 
+## Convenções do frontend
+
+- **Stack**: Vite + React 18 + TypeScript + Tailwind + shadcn/ui (Radix primitives) + TanStack Query + React Router
+- **Tipos**: `web/src/lib/types.ts` espelha os DTOs do backend manualmente. Quando o contrato mudar, atualiza ambos. Migrar pra `openapi-typescript` (gerar do `/v3/api-docs`) é o caminho longo prazo.
+- **API client**: `web/src/lib/api.ts`. Já injeta `Idempotency-Key` UUIDv4 quando `idempotent: true`. Não chamar `fetch` direto nos componentes.
+- **Hooks**: TanStack Query em `web/src/hooks/useApi.ts`. Sempre invalidar `queryKey` relevante depois de mutation.
+- **Auto-refresh** ativo na página `Charges` e `ChargeDetail` (saga é assíncrona, polling de 3-5s dá feedback ao vivo).
+- **Output do build**: `vite.config.ts` aponta pra `../src/main/resources/static`. Esse path é gitignored. NÃO commit dele.
+- **Dev mode**: `make web-dev` roda Vite em :5173 com proxy pra :8080. CORS não aparece porque tudo passa pelo Vite.
+- **Prod**: `make run` (ou `mvn package`) → frontend-maven-plugin builda → JAR contém SPA → Spring serve.
+- **SPA routing**: deep links como `/charges/uuid` precisam do `WebMvcConfig` (em infrastructure/config) que faz fallback pra `/index.html`. Não mexer.
+
 ## Fora de escopo (não fazer sem pedido)
 
 - Implementar gateway BCB real (precisa mTLS + ICP-Brasil + credenciais reais — só faz sentido em contexto de cliente)
 - Migração Java 25 (plano abandonado em `.github/java-upgrade/`, gitignored)
 - Os itens marcados como roadmap no README (DICT, conciliação batch, multi-tenant, chaos testing, Helm, dashboards as code)
+- Auth no frontend (mock-only por ora — em prod entraria Keycloak/Cognito + roles)
 
 ## Mensagens de commit
 

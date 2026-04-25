@@ -4,7 +4,9 @@
 
 **Implementação de referência *production-grade* para Pix Automático + Open Finance Brasil**
 
-Spring Boot 3.4 · Java 21 · Hexagonal · Saga · Outbox · Idempotência forte · OpenTelemetry
+Backend Spring Boot 3.4 + Java 21 · Frontend React 18 + TypeScript + Tailwind · Empacotados como artefato único
+
+Hexagonal · Saga · Outbox · Idempotência forte · OpenTelemetry
 
 [![CI](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/actions/workflows/ci.yml/badge.svg)](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/actions/workflows/codeql.yml/badge.svg)](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/actions/workflows/codeql.yml)
@@ -19,12 +21,13 @@ Spring Boot 3.4 · Java 21 · Hexagonal · Saga · Outbox · Idempotência forte
 
 ---
 
-> **TL;DR** &nbsp;·&nbsp; Esta é a implementação que você procuraria se sua fintech precisasse integrar com o Pix Automático **amanhã** e não pudesse errar. Hexagonal, com idempotência forte, outbox transacional, saga orquestrada, observabilidade end-to-end e testes que cobrem do agregado até o webhook. Roda 100% local com `make up`.
+> **TL;DR** &nbsp;·&nbsp; Esta é a implementação que você procuraria se sua fintech precisasse integrar com o Pix Automático **amanhã** e não pudesse errar. Hexagonal, com idempotência forte, outbox transacional, saga orquestrada, observabilidade end-to-end, painel operacional React e testes que cobrem do agregado até o webhook. Roda 100% local com `make up && make run`.
 
 ## Sumário
 
 - [Por que existe](#por-que-existe)
 - [Capacidades](#capacidades)
+- [Painel operacional (frontend)](#painel-operacional-frontend)
 - [Arquitetura](#arquitetura)
 - [Stack](#stack)
 - [Quickstart](#quickstart)
@@ -63,6 +66,31 @@ Este repositório demonstra, em código real e executável, os padrões que uma 
 | **Migrations** | Flyway versionado |
 | **Contratos** | OpenAPI 3 autogerado (SpringDoc) |
 | **Decisões** | 5 ADRs documentando cada escolha arquitetural não trivial |
+| **Painel operacional** | SPA React + TypeScript + shadcn/ui — Dashboard, CRUD de Consents, agendamento de Charges, timeline de saga |
+
+## Painel operacional (frontend)
+
+SPA em React 18 + TypeScript empacotada **dentro do mesmo JAR** do backend — `make run` sobe API + UI no mesmo `:8080`. Não tem deploy separado, não tem CORS, não tem dois contextos pra debugar.
+
+| Página | O que mostra |
+|---|---|
+| **Dashboard** | KPIs (consents/subscriptions/charges totais, taxa de sucesso), feed das últimas 5 cobranças, indicadores de saúde da plataforma |
+| **Consents** | Tabela paginada, criar consent, autorizar, revogar (com motivo), drill-down no detalhe |
+| **Subscriptions** | Tabela vinculada a consents autorizados, criar subscription |
+| **Charges** | Tabela com auto-refresh a cada 5s (acompanha saga ao vivo), agendar cobrança |
+| **Charge detail** | Timeline visual `SCHEDULED → INITIATED → SETTLED/FAILED` com erro do BCB se houver |
+| **Webhooks** | Documentação do contrato `POST /webhooks/bcb/charge-status` + atalhos pra Kafka UI / Grafana |
+
+Stack: **Vite** (build), **React 18** + **TypeScript**, **Tailwind CSS** + **shadcn/ui** (Radix primitives), **TanStack Query** (cache + refetch), **React Router**.
+
+Comandos:
+
+```bash
+make web-dev    # Vite dev server em :5173 com proxy pra :8080 (hot reload)
+make web-build  # builda só o frontend pra src/main/resources/static/
+make run        # build full + roda app (API + UI bundled em :8080)
+make run-fast   # roda só backend, pula build do frontend
+```
 
 ## Arquitetura
 
@@ -135,13 +163,14 @@ Diagramas **C4** detalhados em [`docs/architecture/`](./docs/architecture/).
 | Segurança | Spring Security + OAuth2 client/resource server |
 | API docs | SpringDoc OpenAPI 3 |
 | Testes | JUnit 5 · Testcontainers · Pact · ArchUnit · JaCoCo |
-| Build | Maven 3.9 (wrapper) |
+| Build | Maven 3.9 (wrapper) + frontend-maven-plugin (npm via Maven) |
 | Container | Buildpacks (Spring Boot OCI image) |
+| Frontend | Vite + React 18 + TypeScript + Tailwind + shadcn/ui + TanStack Query |
 | CI/CD | GitHub Actions · CodeQL · Semgrep · Trivy · Dependabot |
 
 ## Quickstart
 
-**Pré-requisitos:** JDK 21, Docker Desktop, ~4 GB de RAM livre.
+**Pré-requisitos:** JDK 21, Docker Desktop, ~4 GB de RAM livre. Node 22 só é necessário se for desenvolver o frontend separado (`make web-dev`); o build pelo Maven baixa o Node automaticamente.
 
 ```bash
 # 1. Clonar
@@ -151,18 +180,19 @@ cd pix-automatico-reference
 # 2. Sobe Postgres + Redis + Kafka + stack de observabilidade
 make up
 
-# 3. Roda a app (perfil local)
+# 3. Roda a app (perfil local) — builda backend + frontend e empacota tudo
 make run
 
-# 4. Verifica
-curl -s http://localhost:8080/actuator/health | jq .
+# 4. Abre o painel
+open http://localhost:8080  # ou xdg-open / start, conforme OS
 ```
 
 **Acessos:**
 
 | Serviço | URL | Notas |
 |---|---|---|
-| API | http://localhost:8080 | |
+| **Painel operacional** | http://localhost:8080 | SPA bundled — Dashboard, CRUD de consents/charges, timeline da saga |
+| API REST | http://localhost:8080/v1/* | mesma origem do painel |
 | OpenAPI UI | http://localhost:8080/swagger-ui.html | contratos vivos |
 | Actuator | http://localhost:8080/actuator | health, metrics, info |
 | Grafana | http://localhost:3000 | login anônimo (admin) |
@@ -251,24 +281,33 @@ pix-automatico-reference/
 │   │   ├── persistence/
 │   │   ├── messaging/
 │   │   ├── cache/
-│   │   └── config/
+│   │   └── config/             # WebMvcConfig (SPA fallback), Security, Jackson...
 │   └── adapter/web/            # controllers, DTOs, exception handlers
 ├── src/main/resources/
 │   ├── application.yml
-│   └── db/migration/           # Flyway
+│   ├── db/migration/           # Flyway
+│   └── static/                 # gerado pelo build do frontend (gitignored)
 ├── src/test/java/.../
 │   ├── domain/                 # testes unitários puros
 │   ├── application/            # casos de uso com ports mockados
 │   ├── architecture/           # ArchUnit
 │   └── integration/            # Testcontainers (Postgres + Redis + Kafka)
+├── web/                        # frontend React + TS + Tailwind
+│   ├── src/
+│   │   ├── components/         # ui/* (shadcn primitives), layout/*
+│   │   ├── pages/              # Dashboard, Consents, Subscriptions, Charges, Webhooks
+│   │   ├── hooks/              # TanStack Query bindings
+│   │   └── lib/                # api client, types, query client, utils
+│   ├── package.json
+│   └── vite.config.ts          # outDir aponta pra ../src/main/resources/static
 ├── config/                     # configs do otel-collector, prometheus, grafana, etc
 ├── docs/
 │   ├── adr/                    # decisões arquiteturais
 │   ├── architecture/           # C4 (context, container, component)
 │   └── flows/                  # diagramas de fluxos críticos
 ├── docker-compose.yml          # stack completa de apoio
-├── Makefile                    # DX: up/down/test/it/run/image
-└── pom.xml
+├── Makefile                    # DX: up/down/test/it/run/image/web-dev/web-build
+└── pom.xml                     # frontend-maven-plugin builda o web/ na fase generate-resources
 ```
 
 ## Estratégia de testes

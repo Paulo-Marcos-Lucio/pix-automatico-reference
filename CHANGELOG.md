@@ -6,6 +6,29 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Unreleased]
 
+### Added — Frontend (painel operacional)
+- SPA em React 18 + TypeScript + Vite + Tailwind + shadcn/ui (Radix) + TanStack Query + React Router empacotada **dentro do mesmo JAR** do backend (single-artifact deploy)
+- 7 páginas: Dashboard com KPIs e feed ao vivo, Consents (tabela + criar + drill-down + autorizar/revogar), ConsentDetail, Subscriptions, Charges (auto-refresh 5s), ChargeDetail com timeline visual da saga, Webhooks (documentação do contrato)
+- API client em `web/src/lib/api.ts` com injeção automática de `Idempotency-Key` UUIDv4 nos POSTs
+- Vite proxy de dev (:5173 → :8080) — sem CORS em dev, sem dois deploys em prod
+- Dark theme via CSS variables (preparado, default light)
+- frontend-maven-plugin no pom.xml — Maven baixa Node + npm + builda o frontend automaticamente
+- WebMvcConfig com PathResourceResolver fazendo fallback pra `index.html` em deep links da SPA
+- `.gitignore` atualizado: `web/node_modules/`, `web/dist/`, `src/main/resources/static/`
+- Makefile: novos targets `web-dev`, `web-build`, `run-fast`
+- CI: novo job `Frontend build` (parallel ao backend) com cache de npm
+- CLAUDE.md: seção de convenções do frontend
+
+### Added — Backend (LIST endpoints)
+- `GET /v1/consents?page&size` — lista paginada de consents
+- `GET /v1/charges?page&size` — lista paginada de charges
+- `GET /v1/subscriptions?page&size` — lista paginada de subscriptions
+- `GET /v1/subscriptions/{id}` — busca subscription por ID
+- Novos use cases em `domain/port/in/`: `ListConsentsUseCase`, `ListChargesUseCase`, `ListSubscriptionsUseCase`, `GetSubscriptionUseCase`
+- `findAll(int page, int size)` e `count()` em todos os repositórios (port out + adapters)
+- `SubscriptionView` DTO + factory `from(Subscription)` para uniformizar conversão
+- Resposta paginada padronizada: `{ items, total, page, size }`
+
 ## [0.1.0] - 2026-04-25
 
 Primeira release pública. Implementação de referência completa, com CI/CD, observabilidade e testes de integração rodando.
