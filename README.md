@@ -354,9 +354,9 @@ Para reportar vulnerabilidade, **não abra issue pública**. Use [Security Advis
 
 ## Autor
 
-Construído por **Paulo SP** ([@Paulo-Marcos-Lucio](https://github.com/Paulo-Marcos-Lucio)) como referência pública para **consultoria em integrações regulatórias** — Pix Automático, Open Finance, Open Insurance.
+Construído por **Paulo SP** — [@Paulo-Marcos-Lucio](https://github.com/Paulo-Marcos-Lucio) no GitHub, [LinkedIn](https://www.linkedin.com/in/paulo-marcos-a07379174/) — como referência pública para **consultoria em integrações regulatórias** (Pix Automático, Open Finance, Open Insurance).
 
-> Se sua empresa precisa de revisão de arquitetura ou implementação de integração com Pix Automático ou Open Finance, abra uma [issue de contato](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/issues/new?labels=contact) ou conecte pelo perfil do GitHub.
+> Sua empresa precisa de revisão de arquitetura ou implementação de integração com Pix Automático ou Open Finance? Me chama no [LinkedIn](https://www.linkedin.com/in/paulo-marcos-a07379174/) ou abre uma [issue de contato](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/issues/new?labels=contact).
 
 ---
 
