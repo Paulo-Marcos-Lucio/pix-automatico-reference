@@ -17,7 +17,7 @@ export default defineConfig({
     sourcemap: true,
   },
   server: {
-    port: 5173,
+    port: 5180,
     strictPort: true,
     proxy: {
       "/v1": "http://localhost:8080",
