@@ -54,6 +54,7 @@ class ConsentLifecycleIT extends AbstractIntegrationIT {
 
         client().post()
                 .uri("/v1/consents/" + consentId + "/authorize")
+                .header("Idempotency-Key", UUID.randomUUID().toString())
                 .retrieve()
                 .toBodilessEntity();
 
