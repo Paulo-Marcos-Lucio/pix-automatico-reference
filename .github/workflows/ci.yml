@@ -60,7 +60,7 @@ jobs:
           cache: maven
 
       - name: Run unit tests
-        run: $MVN test
+        run: $MVN test -Dsurefire.useFile=false -Dsurefire.printSummary=true
 
       - name: Publish test report
         if: always()
@@ -95,7 +95,7 @@ jobs:
           cache: maven
 
       - name: Run integration tests
-        run: $MVN verify -DskipUTs=false
+        run: $MVN verify -DskipUTs=false -Dsurefire.useFile=false -Dfailsafe.useFile=false
         env:
           TESTCONTAINERS_RYUK_DISABLED: "false"
           DOCKER_HOST: unix:///var/run/docker.sock
