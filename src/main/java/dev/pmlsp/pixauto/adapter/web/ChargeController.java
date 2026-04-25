@@ -1,9 +1,9 @@
 package dev.pmlsp.pixauto.adapter.web;
 
 import dev.pmlsp.pixauto.adapter.web.dto.ChargeDtos;
-import dev.pmlsp.pixauto.domain.model.Charge;
 import dev.pmlsp.pixauto.domain.model.Money;
 import dev.pmlsp.pixauto.domain.port.in.GetChargeUseCase;
+import dev.pmlsp.pixauto.domain.port.in.ListChargesUseCase;
 import dev.pmlsp.pixauto.domain.port.in.ScheduleChargeUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ public class ChargeController {
 
     private final ScheduleChargeUseCase scheduleCharge;
     private final GetChargeUseCase getCharge;
+    private final ListChargesUseCase listCharges;
 
     @PostMapping
     public ResponseEntity<ChargeDtos.ScheduleChargeResponse> schedule(
@@ -33,15 +34,20 @@ public class ChargeController {
                         id, dev.pmlsp.pixauto.domain.model.ChargeStatus.SCHEDULED, req.scheduledFor()));
     }
 
+    @GetMapping
+    public ChargeDtos.ChargeListResponse list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        var result = listCharges.list(page, size);
+        return new ChargeDtos.ChargeListResponse(
+                result.items().stream().map(ChargeDtos.ChargeView::from).toList(),
+                result.total(),
+                result.page(),
+                result.size());
+    }
+
     @GetMapping("/{id}")
     public ChargeDtos.ChargeView get(@PathVariable UUID id) {
-        Charge c = getCharge.getById(id);
-        return new ChargeDtos.ChargeView(
-                c.getId(), c.getSubscriptionId(), c.getConsentId(),
-                c.getAmount().amount(), c.getAmount().currency().getCurrencyCode(),
-                c.getScheduledFor(), c.getStatus(),
-                c.getEndToEndId() != null ? c.getEndToEndId().value() : null,
-                c.getInitiatedAt(), c.getSettledAt(),
-                c.getErrorCode(), c.getErrorMessage(), c.getAttemptCount());
+        return ChargeDtos.ChargeView.from(getCharge.getById(id));
     }
 }

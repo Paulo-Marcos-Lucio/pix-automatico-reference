@@ -8,6 +8,7 @@ import dev.pmlsp.pixauto.domain.model.Charge;
 import dev.pmlsp.pixauto.domain.model.Consent;
 import dev.pmlsp.pixauto.domain.model.Subscription;
 import dev.pmlsp.pixauto.domain.port.in.GetChargeUseCase;
+import dev.pmlsp.pixauto.domain.port.in.ListChargesUseCase;
 import dev.pmlsp.pixauto.domain.port.in.ScheduleChargeUseCase;
 import dev.pmlsp.pixauto.domain.port.in.UpdateChargeStatusUseCase;
 import dev.pmlsp.pixauto.domain.port.out.ChargeRepository;
@@ -24,7 +25,8 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ChargeService implements ScheduleChargeUseCase, GetChargeUseCase, UpdateChargeStatusUseCase {
+public class ChargeService implements
+        ScheduleChargeUseCase, GetChargeUseCase, UpdateChargeStatusUseCase, ListChargesUseCase {
 
     private final ChargeRepository charges;
     private final SubscriptionRepository subscriptions;
@@ -69,5 +71,15 @@ public class ChargeService implements ScheduleChargeUseCase, GetChargeUseCase, U
         charges.save(charge);
         outbox.append(charge.pullPendingEvents());
         log.info("charge.updated id={} status={}", charge.getId(), charge.getStatus());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ListChargesUseCase.Result list(int page, int size) {
+        return new ListChargesUseCase.Result(
+                charges.findAll(page, size),
+                charges.count(),
+                page,
+                size);
     }
 }

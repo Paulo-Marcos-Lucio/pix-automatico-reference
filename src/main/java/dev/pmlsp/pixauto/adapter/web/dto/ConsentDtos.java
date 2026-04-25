@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public final class ConsentDtos {
@@ -59,6 +60,12 @@ public final class ConsentDtos {
             Instant authorizedAt,
             Instant revokedAt,
             String revocationReason) {}
+
+    public record ConsentListResponse(
+            List<ConsentView> items,
+            long total,
+            int page,
+            int size) {}
 
     public record RevokeConsentRequest(@NotBlank String reason) {}
 }

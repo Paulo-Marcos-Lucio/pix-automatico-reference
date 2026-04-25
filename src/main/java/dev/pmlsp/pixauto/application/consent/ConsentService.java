@@ -5,6 +5,7 @@ import dev.pmlsp.pixauto.domain.model.Consent;
 import dev.pmlsp.pixauto.domain.port.in.AuthorizeConsentUseCase;
 import dev.pmlsp.pixauto.domain.port.in.CreateConsentUseCase;
 import dev.pmlsp.pixauto.domain.port.in.GetConsentUseCase;
+import dev.pmlsp.pixauto.domain.port.in.ListConsentsUseCase;
 import dev.pmlsp.pixauto.domain.port.in.RevokeConsentUseCase;
 import dev.pmlsp.pixauto.domain.port.out.ConsentRepository;
 import dev.pmlsp.pixauto.domain.port.out.OutboxStore;
@@ -20,7 +21,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ConsentService implements
         CreateConsentUseCase, GetConsentUseCase,
-        AuthorizeConsentUseCase, RevokeConsentUseCase {
+        AuthorizeConsentUseCase, RevokeConsentUseCase,
+        ListConsentsUseCase {
 
     private final ConsentRepository consents;
     private final OutboxStore outbox;
@@ -58,6 +60,16 @@ public class ConsentService implements
         consents.save(consent);
         outbox.append(consent.pullPendingEvents());
         log.info("consent.revoked id={} reason={}", consentId, reason);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ListConsentsUseCase.Result list(int page, int size) {
+        return new ListConsentsUseCase.Result(
+                consents.findAll(page, size),
+                consents.count(),
+                page,
+                size);
     }
 
     private static String mask(String document) {

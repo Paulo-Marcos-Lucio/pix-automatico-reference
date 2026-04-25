@@ -3,9 +3,12 @@ package dev.pmlsp.pixauto.infrastructure.persistence.consent;
 import dev.pmlsp.pixauto.domain.model.*;
 import dev.pmlsp.pixauto.domain.port.out.ConsentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.Currency;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +28,18 @@ public class ConsentRepositoryAdapter implements ConsentRepository {
     @Override
     public Optional<Consent> findById(UUID id) {
         return jpa.findById(id).map(ConsentRepositoryAdapter::toDomain);
+    }
+
+    @Override
+    public List<Consent> findAll(int page, int size) {
+        return jpa.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .map(ConsentRepositoryAdapter::toDomain)
+                .toList();
+    }
+
+    @Override
+    public long count() {
+        return jpa.count();
     }
 
     private static ConsentJpaEntity toEntity(Consent c) {

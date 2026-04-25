@@ -6,6 +6,8 @@ import dev.pmlsp.pixauto.domain.model.EndToEndId;
 import dev.pmlsp.pixauto.domain.model.Money;
 import dev.pmlsp.pixauto.domain.port.out.ChargeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.Currency;
@@ -51,6 +53,18 @@ public class ChargeRepositoryAdapter implements ChargeRepository {
         return jpa.findBySubscriptionIdAndStatus(subscriptionId, status).stream()
                 .map(ChargeRepositoryAdapter::toDomain)
                 .toList();
+    }
+
+    @Override
+    public List<Charge> findAll(int page, int size) {
+        return jpa.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .map(ChargeRepositoryAdapter::toDomain)
+                .toList();
+    }
+
+    @Override
+    public long count() {
+        return jpa.count();
     }
 
     private static Charge toDomain(ChargeJpaEntity e) {

@@ -3,8 +3,11 @@ package dev.pmlsp.pixauto.infrastructure.persistence.subscription;
 import dev.pmlsp.pixauto.domain.model.Subscription;
 import dev.pmlsp.pixauto.domain.port.out.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,6 +36,18 @@ public class SubscriptionRepositoryAdapter implements SubscriptionRepository {
     @Override
     public Optional<Subscription> findById(UUID id) {
         return jpa.findById(id).map(SubscriptionRepositoryAdapter::toDomain);
+    }
+
+    @Override
+    public List<Subscription> findAll(int page, int size) {
+        return jpa.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .map(SubscriptionRepositoryAdapter::toDomain)
+                .toList();
+    }
+
+    @Override
+    public long count() {
+        return jpa.count();
     }
 
     private static Subscription toDomain(SubscriptionJpaEntity e) {

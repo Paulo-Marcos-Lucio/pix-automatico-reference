@@ -11,4 +11,6 @@ public interface ChargeRepository {
     Charge save(Charge charge);
     Optional<Charge> findById(UUID id);
     List<Charge> findBySubscriptionIdAndStatus(UUID subscriptionId, ChargeStatus status);
+    List<Charge> findAll(int page, int size);
+    long count();
 }

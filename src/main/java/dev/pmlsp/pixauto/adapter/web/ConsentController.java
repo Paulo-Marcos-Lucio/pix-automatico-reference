@@ -5,6 +5,7 @@ import dev.pmlsp.pixauto.adapter.web.mapper.ConsentWebMapper;
 import dev.pmlsp.pixauto.domain.port.in.AuthorizeConsentUseCase;
 import dev.pmlsp.pixauto.domain.port.in.CreateConsentUseCase;
 import dev.pmlsp.pixauto.domain.port.in.GetConsentUseCase;
+import dev.pmlsp.pixauto.domain.port.in.ListConsentsUseCase;
 import dev.pmlsp.pixauto.domain.port.in.RevokeConsentUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ConsentController {
     private final GetConsentUseCase getConsent;
     private final AuthorizeConsentUseCase authorizeConsent;
     private final RevokeConsentUseCase revokeConsent;
+    private final ListConsentsUseCase listConsents;
     private final ConsentWebMapper mapper;
 
     @PostMapping
@@ -36,6 +38,18 @@ public class ConsentController {
                 id, "AWAITING_AUTHORIZATION",
                 "/v1/consents/" + id + "/authorize");
         return ResponseEntity.created(URI.create("/v1/consents/" + id)).body(body);
+    }
+
+    @GetMapping
+    public ConsentDtos.ConsentListResponse list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        var result = listConsents.list(page, size);
+        return new ConsentDtos.ConsentListResponse(
+                result.items().stream().map(mapper::toView).toList(),
+                result.total(),
+                result.page(),
+                result.size());
     }
 
     @GetMapping("/{id}")
