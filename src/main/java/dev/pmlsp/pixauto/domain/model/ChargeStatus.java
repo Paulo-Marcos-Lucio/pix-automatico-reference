@@ -10,7 +10,7 @@ public enum ChargeStatus {
     CANCELLED;
 
     private static final java.util.Map<ChargeStatus, Set<ChargeStatus>> TRANSITIONS = java.util.Map.of(
-            SCHEDULED, Set.of(INITIATED, CANCELLED),
+            SCHEDULED, Set.of(INITIATED, CANCELLED, FAILED),
             INITIATED, Set.of(SETTLED, FAILED),
             SETTLED, Set.of(),
             FAILED, Set.of(),
