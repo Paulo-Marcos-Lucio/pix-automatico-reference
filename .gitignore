@@ -62,3 +62,5 @@ web/node_modules/
 web/dist/
 web/.vite/
 src/main/resources/static/
+
+docker-compose.override.yml
