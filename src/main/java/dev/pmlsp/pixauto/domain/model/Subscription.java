@@ -51,32 +51,27 @@ public class Subscription {
         }
         this.lastChargeDate = chargeDate;
         this.chargeCount++;
-        this.version++;
     }
 
     public void pause() {
         if (status == Status.ACTIVE) {
             this.status = Status.PAUSED;
-            this.version++;
-        }
+            }
     }
 
     public void resume() {
         if (status == Status.PAUSED) {
             this.status = Status.ACTIVE;
-            this.version++;
-        }
+            }
     }
 
     public void cancel() {
         if (status != Status.COMPLETED && status != Status.CANCELLED) {
             this.status = Status.CANCELLED;
-            this.version++;
-        }
+            }
     }
 
     public void complete() {
         this.status = Status.COMPLETED;
-        this.version++;
     }
 }

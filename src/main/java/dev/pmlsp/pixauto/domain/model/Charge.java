@@ -70,7 +70,6 @@ public class Charge extends AggregateRoot {
         this.endToEndId = Objects.requireNonNull(e2e);
         this.initiatedAt = Instant.now();
         this.attemptCount++;
-        this.version++;
         registerEvent(new ChargeInitiatedEvent(id, e2e.value()));
     }
 
@@ -78,7 +77,6 @@ public class Charge extends AggregateRoot {
         requireTransition(ChargeStatus.SETTLED);
         this.status = ChargeStatus.SETTLED;
         this.settledAt = Objects.requireNonNull(settledAt);
-        this.version++;
         registerEvent(new ChargeSettledEvent(id, endToEndId != null ? endToEndId.value() : null, settledAt));
     }
 
@@ -87,14 +85,12 @@ public class Charge extends AggregateRoot {
         this.status = ChargeStatus.FAILED;
         this.errorCode = code;
         this.errorMessage = message;
-        this.version++;
         registerEvent(new ChargeFailedEvent(id, code, message));
     }
 
     public void cancel() {
         requireTransition(ChargeStatus.CANCELLED);
         this.status = ChargeStatus.CANCELLED;
-        this.version++;
     }
 
     public boolean isTerminal() {

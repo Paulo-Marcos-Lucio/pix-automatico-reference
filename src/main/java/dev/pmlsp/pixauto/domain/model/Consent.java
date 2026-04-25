@@ -55,7 +55,6 @@ public class Consent extends AggregateRoot {
         requireTransition(ConsentStatus.AUTHORIZED);
         this.status = ConsentStatus.AUTHORIZED;
         this.authorizedAt = Instant.now();
-        this.version++;
         registerEvent(new ConsentAuthorizedEvent(id, payer.document(), receiverKey.value()));
     }
 
@@ -64,7 +63,6 @@ public class Consent extends AggregateRoot {
         this.status = ConsentStatus.REVOKED;
         this.revokedAt = Instant.now();
         this.revocationReason = reason;
-        this.version++;
         registerEvent(new ConsentRevokedEvent(id, reason));
     }
 
@@ -72,7 +70,6 @@ public class Consent extends AggregateRoot {
         if (status.isTerminal()) return;
         requireTransition(ConsentStatus.EXPIRED);
         this.status = ConsentStatus.EXPIRED;
-        this.version++;
     }
 
     public boolean isAuthorized() {
