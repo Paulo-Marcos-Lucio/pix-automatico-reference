@@ -87,6 +87,9 @@ jobs:
       - name: Set Maven version
         run: ./mvnw -B -ntp versions:set -DnewVersion=${{ needs.build.outputs.version }} -DgenerateBackupPoms=false
 
+      - name: Resolve lowercase image repo
+        run: echo "IMAGE_REPO=$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -98,23 +101,23 @@ jobs:
         run: |
           ./mvnw -B -ntp spring-boot:build-image \
             -DskipTests \
-            -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}
+            -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ needs.build.outputs.version }}
 
       - name: Tag latest
         run: |
           docker tag \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }} \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ needs.build.outputs.version }} \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:latest
 
       - name: Push image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ needs.build.outputs.version }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:latest
 
       - name: Trivy scan (released image)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ needs.build.outputs.version }}
           format: sarif
           output: trivy-release.sarif
           severity: HIGH,CRITICAL
@@ -139,11 +142,19 @@ jobs:
           retention-days: 90
           if-no-files-found: ignore
 
+      - name: Capture pushed image digest
+        id: digest
+        run: |
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ needs.build.outputs.version }} \
+            | cut -d@ -f2)
+          echo "digest=${DIGEST}" >> "$GITHUB_OUTPUT"
+
       - name: Generate build attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          subject-digest: sha256:${{ steps.image-digest.outputs.digest || '' }}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}
+          subject-digest: ${{ steps.digest.outputs.digest }}
           push-to-registry: false
         continue-on-error: true
 
