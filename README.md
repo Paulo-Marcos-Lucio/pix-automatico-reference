@@ -363,6 +363,25 @@ Toda decisão arquitetural não trivial é documentada como ADR ([Architecture D
 | [0004](./docs/adr/0004-charge-saga.md) | Saga orquestrada vs coreografada |
 | [0005](./docs/adr/0005-observability.md) | Observabilidade e correlação por `traceId` |
 
+## Test Coverage & API Docs
+
+| Categoria | Tests |
+|---|---|
+| Unit (incl. ArchUnit) | 25 |
+| Integration (Testcontainers) | 7 |
+| **Total** | **32** |
+
+JaCoCo coverage report gerado em `target/site/jacoco/index.html` após `./mvnw verify`.
+
+**API Documentation** (live com a app rodando em `http://localhost:8080`):
+- Swagger UI: <http://localhost:8080/swagger-ui.html>
+- OpenAPI 3 spec (JSON): <http://localhost:8080/v3/api-docs>
+- Geração offline do spec:
+  ```bash
+  ./mvnw spring-boot:run    # em outro terminal
+  curl http://localhost:8080/v3/api-docs > docs/openapi.json
+  ```
+
 ## Roadmap
 
 - [ ] Suporte a **DICT** (consulta de chave Pix antes de cobrar)
