@@ -363,13 +363,41 @@ Toda decisão arquitetural não trivial é documentada como ADR ([Architecture D
 | [0004](./docs/adr/0004-charge-saga.md) | Saga orquestrada vs coreografada |
 | [0005](./docs/adr/0005-observability.md) | Observabilidade e correlação por `traceId` |
 
+## FAPI 2.0 + DPoP (RFC 9449) — v0.2.0
+
+A v0.2.0 ativa um perfil `fapi` que protege os endpoints `/v1/consents/**`, `/v1/subscriptions/**` e `/v1/charges/**` com **DPoP sender-constrained access tokens** — o padrão que o profile FAPI 2.0 do Open Finance Brasil herdará pros fluxos de Pix Automático recorrente.
+
+```bash
+SPRING_PROFILES_ACTIVE=local,fapi make run
+```
+
+Wire-protocol esperado pelo receiver (PISP):
+
+```http
+POST /mock-auth/token                      # auth server in-process
+DPoP: <proof JWT assinado pela chave do receiver>
+X-Client-Id: demo-receiver
+→ { "access_token": "...", "token_type": "DPoP", "expires_in": 600, "scope": "recurring-payments" }
+
+POST /v1/consents
+Authorization: DPoP <access_token>         # carrega cnf.jkt = thumbprint da chave do receiver
+DPoP: <proof JWT fresco pra esta requisição>
+Idempotency-Key: <uuid v4>
+{ ...payload do consent... }
+→ 201 Created (ou 4xx por business; 401 só se DPoP falha)
+```
+
+11 testes cobrem o validador isoladamente (`DPoPValidatorTest` × 8) e o flow E2E ponta-a-ponta (`FapiE2EIT` × 3 — token issuance, request sem headers retorna 401 + `WWW-Authenticate: DPoP`, replay attack com chave diferente retorna 401 `invalid_token`).
+
+A chain FAPI declara `@Order(0)` e `securityMatcher` apenas sobre os 3 paths OF — paths fora (actuator, webhooks BCB, frontend SPA) seguem fluindo pela chain permissiva existente. **Roubo de token + replay de outra máquina = 401 garantido pelo `cnf.jkt` mismatch.**
+
 ## Test Coverage & API Docs
 
 | Categoria | Tests |
 |---|---|
-| Unit (incl. ArchUnit) | 25 |
-| Integration (Testcontainers) | 7 |
-| **Total** | **32** |
+| Unit (incl. ArchUnit + 8 DPoPValidatorTest) | 38 |
+| Integration (Testcontainers + 3 FapiE2EIT) | 10 |
+| **Total** | **48** |
 
 JaCoCo coverage report gerado em `target/site/jacoco/index.html` após `./mvnw verify`.
 
@@ -384,6 +412,8 @@ JaCoCo coverage report gerado em `target/site/jacoco/index.html` após `./mvnw v
 
 ## Roadmap
 
+- [x] **v0.2.0 — FAPI 2.0 + DPoP RFC 9449** sender-constrained tokens · mock auth in-process · 11 testes (8 unit + 3 IT)
+- [ ] **v0.3.0** — `private_key_jwt` (RFC 7523) + DCR (Dynamic Client Registration) + PAR (RFC 9126)
 - [ ] Suporte a **DICT** (consulta de chave Pix antes de cobrar)
 - [ ] **Conciliação batch** com extrato BCB diário
 - [ ] **Multi-tenant** via `tenantId` propagado por toda a stack
