@@ -3,7 +3,6 @@ package dev.pmlsp.pixauto.integration;
 import dev.pmlsp.pixauto.security.DPoPHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,7 +40,7 @@ class FapiE2EIT extends AbstractIntegrationIT {
     int port;
 
     private RestTemplate http() {
-        return new RestTemplateBuilder().build();
+        return new RestTemplate();
     }
 
     private String baseUrl() {

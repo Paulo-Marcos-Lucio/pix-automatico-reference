@@ -6,7 +6,7 @@
 
 **Implementação de referência *production-grade* para Pix Automático + Open Finance Brasil**
 
-Backend Spring Boot 3.4 + Java 21 · Frontend React 18 + TypeScript + Tailwind · Empacotados como artefato único
+Backend Spring Boot 4.0 + Java 21 · Frontend React 18 + TypeScript + Tailwind · Empacotados como artefato único
 
 Hexagonal · Saga · Outbox · Idempotência forte · OpenTelemetry
 
@@ -15,7 +15,7 @@ Hexagonal · Saga · Outbox · Idempotência forte · OpenTelemetry
 [![Release](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/actions/workflows/release.yml/badge.svg)](https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Java 21](https://img.shields.io/badge/Java-21_LTS-orange?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/21/)
-[![Spring Boot 3.4](https://img.shields.io/badge/Spring_Boot-3.4-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Spring Boot 4.0](https://img.shields.io/badge/Spring_Boot-4.0-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Conventional Commits](https://img.shields.io/badge/Conventional_Commits-1.0-FE5196?logo=conventionalcommits)](https://www.conventionalcommits.org/)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
@@ -154,11 +154,11 @@ Diagramas **C4** detalhados em [`docs/architecture/`](./docs/architecture/).
 | Camada | Tecnologia |
 |---|---|
 | Runtime | Java 21 (virtual threads) |
-| App framework | Spring Boot 3.4 + Spring Web MVC |
+| App framework | Spring Boot 4.0 + Spring Web MVC |
 | Persistência | PostgreSQL 16 + Spring Data JPA + Flyway |
 | Cache / Idempotência | Redis 7 |
 | Mensageria | Apache Kafka 3.8 (KRaft, sem ZooKeeper) |
-| Resiliência | Resilience4j 2.2 |
+| Resiliência | Resilience4j 2.4 |
 | Tracing | OpenTelemetry → Tempo |
 | Métricas | Micrometer → Prometheus → Grafana |
 | Logs | Logback JSON estruturado → Loki |
