@@ -8,7 +8,7 @@ Person(merchant, "Merchant Backend")
 System_Ext(bcb, "Banco Central")
 
 Container_Boundary(pixauto, "Pix Automatico Reference") {
-    Container(api, "API Spring Boot", "Java 21 / Spring Boot 3.4", "REST API, webhooks, idempotencia, saga")
+    Container(api, "API Spring Boot", "Java 21 / Spring Boot 4.0", "REST API, webhooks, idempotencia, saga")
     ContainerDb(postgres, "PostgreSQL", "Postgres 16", "consents, subscriptions, charges, outbox")
     ContainerDb(redis, "Redis", "Redis 7", "Idempotency store, rate limit")
     ContainerQueue(kafka, "Apache Kafka", "Kafka 3.8 (KRaft)", "Event bus: pixauto.consent.events, pixauto.charge.events")

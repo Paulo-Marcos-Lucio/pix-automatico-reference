@@ -6,6 +6,23 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Unreleased]
 
+### Changed — Manutenção junho/2026 (migração Spring Boot 4)
+- **Spring Boot 3.4.1 → 4.0.6** (Spring Framework 7, Jakarta EE 11, Tomcat 11, Kafka client 4.1, Hibernate/JPA novos). Migração de major:
+  - O autoconfigure monolítico foi quebrado em módulos por tecnologia. Adicionados `spring-boot-flyway` e `spring-boot-kafka` explicitamente — sem eles o Flyway não roda (Hibernate `validate` falhava com `missing table [charges]`) e o `KafkaTemplate` não é criado.
+  - `JacksonConfig` reescrito: o hook `Jackson2ObjectMapperBuilderCustomizer` saiu do autoconfigure; o Boot 4 traz Jackson 3 (`tools.jackson`) como mapper default da web, mas o domínio (outbox/listener Kafka) continua serializando com a API estável do Jackson 2, então expomos um `ObjectMapper` Jackson 2 explícito.
+  - `testcontainers` 1.20 → 2.0.5 (gerenciado pelo BOM do Boot 4): artefatos renomeados (`junit-jupiter` → `testcontainers-junit-jupiter`, etc.).
+  - Removido `@EnableRetry` (Spring Retry deixou de vir transitivo e não havia `@Retryable` em uso).
+  - `RestTemplateBuilder` saiu de `org.springframework.boot.web.client`; teste FAPI passou a usar `new RestTemplate()` direto.
+- **resilience4j 2.2.0 → 2.4.0**: módulo `resilience4j-spring-boot3` → `resilience4j-spring-boot4` (compatível com Framework 7).
+- **springdoc-openapi 2.7.0 → 3.0.3** (necessário no Boot 4; springdoc 2.x não funciona).
+- **com.nimbusds:nimbus-jose-jwt 9.47 → 10.9.1**, **lombok 1.18.36 → 1.18.46**, **logstash-logback-encoder 8.0 → 9.0**, **archunit-junit5 1.3.0 → 1.4.2**, **pact junit5 4.6.14 → 4.7.1**, **testcontainers-redis 2.2.2 → 2.2.4**, **jacoco-maven-plugin 0.8.12 → 0.8.15**.
+- **GitHub Actions** (grupo Dependabot): checkout v6, setup-java v5, upload/download-artifact v7/v8, codeql-action v4, e demais bumps.
+
+### Changed — Frontend (manutenção junho/2026)
+- **vite 5.4 → 8.0.16** + **@vitejs/plugin-react 4.3 → 6.0.2** (Node mínimo subiu para >=22.12.0; `node.version` do build Maven foi para v22.22.3). Removido o `overrides` de `esbuild` (vite 8 já traz esbuild patcheado).
+- **react-router-dom 6.28 → 6.30.4** — correção do alerta de segurança Dependabot (open redirect via URL protocol-relative). `npm audit`: 0 vulnerabilidades.
+- **frontend-maven-plugin 1.15.1 → 2.0.0**.
+
 ### Added — Frontend (painel operacional)
 - SPA em React 18 + TypeScript + Vite + Tailwind + shadcn/ui (Radix) + TanStack Query + React Router empacotada **dentro do mesmo JAR** do backend (single-artifact deploy)
 - 7 páginas: Dashboard com KPIs e feed ao vivo, Consents (tabela + criar + drill-down + autorizar/revogar), ConsentDetail, Subscriptions, Charges (auto-refresh 5s), ChargeDetail com timeline visual da saga, Webhooks (documentação do contrato)
