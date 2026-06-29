@@ -25,7 +25,7 @@
         <springdoc.version>3.0.3</springdoc.version>
         <resilience4j.version>2.4.0</resilience4j.version>
         <logstash-logback.version>9.0</logstash-logback.version>
-        <pact.version>4.7.1</pact.version>
+        <pact.version>4.7.3</pact.version>
         <opentelemetry.version>1.43.0</opentelemetry.version>
         <archunit.version>1.4.2</archunit.version>
         <frontend-maven-plugin.version>2.0.0</frontend-maven-plugin.version>
