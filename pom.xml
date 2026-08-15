@@ -28,7 +28,7 @@
         <pact.version>4.7.1</pact.version>
         <opentelemetry.version>1.43.0</opentelemetry.version>
         <archunit.version>1.4.2</archunit.version>
-        <frontend-maven-plugin.version>2.0.0</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
         <!-- vite 8 / @vitejs/plugin-react 6 exigem Node >=22.12.0 (eram 22.11.0) -->
         <node.version>v22.22.3</node.version>
         <npm.version>10.9.3</npm.version>
