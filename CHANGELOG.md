@@ -6,6 +6,30 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-25
+
+Refatoração completa de UI/UX do painel operacional para nível premium —
+hierarquia visual, profundidade e micro-interações em todas as páginas.
+
+### Changed — Frontend (UI/UX premium)
+- Design system refeito (`web/src/index.css`, `tailwind.config.js`): paleta mais profunda com variantes semânticas (sucesso, aviso, destrutivo, info), sombras coloridas reais, tipografia com OpenType features, utilitários novos (`glass-card`, `hero-gradient`, `status-pill`, `lift`, `shimmer`, `text-gradient`)
+- Componentes novos: `PageHeader`, `StatCard` com mini-sparkline inline (SVG puro, sem lib), `Sparkline`, `EmptyState`, tooltip com animação fade+zoom, tabs com count badges, busca com ícone, `StatusBadge` com indicador colorido
+- Componentes refinados: `Button` (gradiente + shadow-glow), `Card`, `Badge`, `Input`, `Table`
+- Sidebar com agrupamento por seção e indicador de rota ativa; header sticky com breadcrumbs e indicador de saúde com animação
+- Todas as páginas (Dashboard, Consentimentos, Assinaturas, Cobranças, detalhes, Notificações) redesenhadas: hero metric, filtros com contagem, estados vazios ilustrados, timeline visual na saga de cobrança
+- Bundle CSS 25 KB → 47 KB, bundle JS 383 KB → 440 KB — sparkline e syntax highlight inline, sem dependências novas
+
+## [0.2.1] - 2026-04-25
+
+### Added — Frontend (i18n)
+- Toda a UI do painel traduzida para português brasileiro via `web/src/lib/i18n.ts`, único ponto que mapeia os enums do contrato (em inglês: `ConsentStatus`, `ChargeStatus`, `SubscriptionStatus`, `Frequency`, `PixKeyType`) para rótulos em PT-BR — contrato da API e identificadores Java continuam em inglês
+- URLs da SPA também em PT-BR (`/painel`, `/consentimentos`, `/assinaturas`, `/cobrancas`, `/notificacoes`); caminhos antigos em inglês continuam funcionando como redirect permanente
+
+### Fixed — Infraestrutura local
+- `docker-compose.yml`: adicionado listener `PLAINTEXT_HOST` no Kafka — o broker não subia (`advertised.listeners` citava um listener ausente de `listeners`) porque `KAFKA_ADVERTISED_LISTENERS` incluía `PLAINTEXT_HOST` sem o listener correspondente declarado em `KAFKA_LISTENERS`
+
+## [0.2.0] - 2026-04-25
+
 ### Added — Frontend (painel operacional)
 - SPA em React 18 + TypeScript + Vite + Tailwind + shadcn/ui (Radix) + TanStack Query + React Router empacotada **dentro do mesmo JAR** do backend (single-artifact deploy)
 - 7 páginas: Dashboard com KPIs e feed ao vivo, Consents (tabela + criar + drill-down + autorizar/revogar), ConsentDetail, Subscriptions, Charges (auto-refresh 5s), ChargeDetail com timeline visual da saga, Webhooks (documentação do contrato)
@@ -95,4 +119,7 @@ Primeira release pública. Implementação de referência completa, com CI/CD, o
 
 [Unreleased]: https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/compare/v0.3.1...HEAD
 [0.3.1]: https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Paulo-Marcos-Lucio/pix-automatico-reference/releases/tag/v0.1.0
